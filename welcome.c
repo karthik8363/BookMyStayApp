@@ -1,43 +1,126 @@
 import java.util.*;
 
-class HotelSystem {
-    // HashSet ensures uniqueness (No double-booking a room ID)
-    private Set<Integer> bookedRooms = new HashSet<>();
-    // Queue ensures fair request handling (FIFO)
-    private Queue<String> bookingRequests = new LinkedList<>();
 
-    public void addRequest(String guestName) {
-        bookingRequests.add(guestName);
-        System.out.println("Request added for: " + guestName);
+class Reservation {
+    private String reservationId;
+    private String guestName;
+    private String roomType;
+
+    public Reservation(String reservationId, String guestName, String roomType) {
+        this.reservationId = reservationId;
+        this.guestName = guestName;
+        this.roomType = roomType;
     }
 
-    public void processBooking(int roomId) {
-        if (bookingRequests.isEmpty()) {
-            System.out.println("No pending requests.");
-            return;
+    public String getReservationId() {
+        return reservationId;
+    }
+
+    public String getGuestName() {
+        return guestName;
+    }
+
+    public String getRoomType() {
+        return roomType;
+    }
+
+    @Override
+    public String toString() {
+        return "ReservationID: " + reservationId +
+                " | Guest: " + guestName +
+                " | Room Type: " + roomType;
+    }
+}
+
+/**
+ * Booking History - stores confirmed reservations
+ */
+class BookingHistory {
+
+    private List<Reservation> confirmedBookings;
+
+    public BookingHistory() {
+        confirmedBookings = new ArrayList<>();
+    }
+
+    /**
+     * Add a confirmed reservation to history
+     */
+    public void addReservation(Reservation reservation) {
+        confirmedBookings.add(reservation);
+    }
+
+    /**
+     * Retrieve all bookings
+     */
+    public List<Reservation> getAllBookings() {
+        return Collections.unmodifiableList(confirmedBookings);
+    }
+}
+
+/**
+ * Booking Report Service - generates summaries
+ */
+class BookingReportService {
+
+    private BookingHistory history;
+
+    public BookingReportService(BookingHistory history) {
+        this.history = history;
+    }
+
+    /**
+     * Display all confirmed bookings
+     */
+    public void displayAllBookings() {
+        System.out.println("\nBooking History Report:");
+        System.out.println("----------------------------");
+
+        for (Reservation r : history.getAllBookings()) {
+            System.out.println(r);
+        }
+    }
+
+    /**
+     * Display summary by room type
+     */
+    public void displaySummaryByRoomType() {
+        Map<String, Integer> summary = new HashMap<>();
+
+        for (Reservation r : history.getAllBookings()) {
+            summary.put(r.getRoomType(),
+                    summary.getOrDefault(r.getRoomType(), 0) + 1);
         }
 
-        if (bookedRooms.contains(roomId)) {
-            System.out.println("Error: Room " + roomId + " is already booked!");
-        } else {
-            String guest = bookingRequests.poll(); // FIFO: Get the first person in line
-            bookedRooms.add(roomId);
-            System.out.println("Success: Room " + roomId + " booked for " + guest);
+        System.out.println("\nBooking Summary by Room Type:");
+        System.out.println("----------------------------");
+        for (String type : summary.keySet()) {
+            System.out.println(type + ": " + summary.get(type));
         }
     }
 }
 
+/**
+ * Main Class
+ */
 public class Main {
+
     public static void main(String[] args) {
-        HotelSystem hotel = new HotelSystem();
 
-        // 1. Fair Request Handling (FIFO)
-        hotel.addRequest("Alice");
-        hotel.addRequest("Bob");
+        // Step 1: Initialize booking history
+        BookingHistory history = new BookingHistory();
 
-        // 2. Real-time Inventory & Uniqueness Enforcement
-        hotel.processBooking(101); // Alice gets 101
-        hotel.processBooking(101); // Bob tries 101 -> Fails (Double-booking prevention)
-        hotel.processBooking(102); // Bob gets 102
+        // Step 2: Simulate confirmed reservations
+        history.addReservation(new Reservation("S1", "Alice", "Single"));
+        history.addReservation(new Reservation("S2", "Bob", "Single"));
+        history.addReservation(new Reservation("D1", "Eve", "Double"));
+        history.addReservation(new Reservation("SU1", "Diana", "Suite"));
+
+        // Step 3: Initialize reporting service
+        BookingReportService reportService = new BookingReportService(history);
+
+        // Step 4: Generate reports
+        reportService.displayAllBookings();
+        reportService.displaySummaryByRoomType();
     }
 }
