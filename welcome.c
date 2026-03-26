@@ -1,43 +1,33 @@
+import java.io.*;
 import java.util.*;
 
-class HotelSystem {
-    // HashSet ensures uniqueness (No double-booking a room ID)
-    private Set<Integer> bookedRooms = new HashSet<>();
-    // Queue ensures fair request handling (FIFO)
-    private Queue<String> bookingRequests = new LinkedList<>();
+/**
+ * Reservation class (Serializable)
+ */
+class Reservation implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String reservationId;
+    private String guestName;
+    private String roomType;
 
-    public void addRequest(String guestName) {
-        bookingRequests.add(guestName);
-        System.out.println("Request added for: " + guestName);
+    public Reservation(String reservationId, String guestName, String roomType) {
+        this.reservationId = reservationId;
+        this.guestName = guestName;
+        this.roomType = roomType;
     }
 
-    public void processBooking(int roomId) {
-        if (bookingRequests.isEmpty()) {
-            System.out.println("No pending requests.");
-            return;
-        }
+    public String getReservationId() { return reservationId; }
+    public String getGuestName() { return guestName; }
+    public String getRoomType() { return roomType; }
 
-        if (bookedRooms.contains(roomId)) {
-            System.out.println("Error: Room " + roomId + " is already booked!");
-        } else {
-            String guest = bookingRequests.poll(); // FIFO: Get the first person in line
-            bookedRooms.add(roomId);
-            System.out.println("Success: Room " + roomId + " booked for " + guest);
-        }
+    @Override
+    public String toString() {
+        return "ReservationID: " + reservationId + " | Guest: " + guestName + " | Room Type: " + roomType;
     }
 }
 
-public class Main {
-    public static void main(String[] args) {
-        HotelSystem hotel = new HotelSystem();
-
-        // 1. Fair Request Handling (FIFO)
-        hotel.addRequest("Alice");
-        hotel.addRequest("Bob");
-
-        // 2. Real-time Inventory & Uniqueness Enforcement
-        hotel.processBooking(101); // Alice gets 101
-        hotel.processBooking(101); // Bob tries 101 -> Fails (Double-booking prevention)
-        hotel.processBooking(102); // Bob gets 102
-    }
-}
+/**
+ * Room Inventory class (Serializable)
+ */
+class RoomInventory implements Serializable {
+    private 
