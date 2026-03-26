@@ -1,43 +1,50 @@
-import java.util.*;
-
-class HotelSystem {
-    // HashSet ensures uniqueness (No double-booking a room ID)
-    private Set<Integer> bookedRooms = new HashSet<>();
-    // Queue ensures fair request handling (FIFO)
-    private Queue<String> bookingRequests = new LinkedList<>();
-
-    public void addRequest(String guestName) {
-        bookingRequests.add(guestName);
-        System.out.println("Request added for: " + guestName);
-    }
-
-    public void processBooking(int roomId) {
-        if (bookingRequests.isEmpty()) {
-            System.out.println("No pending requests.");
-            return;
-        }
-
-        if (bookedRooms.contains(roomId)) {
-            System.out.println("Error: Room " + roomId + " is already booked!");
-        } else {
-            String guest = bookingRequests.poll(); // FIFO: Get the first person in line
-            bookedRooms.add(roomId);
-            System.out.println("Success: Room " + roomId + " booked for " + guest);
-        }
-    }
-}
-
 public class Main {
+
+    /**
+     * Main method - entry point of the Java application.
+     *
+     * @param args Command line arguments
+     */
     public static void main(String[] args) {
-        HotelSystem hotel = new HotelSystem();
 
-        // 1. Fair Request Handling (FIFO)
-        hotel.addRequest("Alice");
-        hotel.addRequest("Bob");
+        // Initialize room data
+        int room1Number = 101;
+        String room1Type = "Single";
+        double room1Price = 1000.0;
+        boolean room1Available = true;
 
-        // 2. Real-time Inventory & Uniqueness Enforcement
-        hotel.processBooking(101); // Alice gets 101
-        hotel.processBooking(101); // Bob tries 101 -> Fails (Double-booking prevention)
-        hotel.processBooking(102); // Bob gets 102
+        int room2Number = 102;
+        String room2Type = "Double";
+        double room2Price = 1800.0;
+        boolean room2Available = true;
+
+        int room3Number = 103;
+        String room3Type = "Suite";
+        double room3Price = 3000.0;
+        boolean room3Available = false;
+
+        // Display room details
+        System.out.println("Hotel Room Initialization");
+        System.out.println("----------------------------");
+
+        System.out.println("Room Number: " + room1Number);
+        System.out.println("Type: " + room1Type);
+        System.out.println("Price: " + room1Price);
+        System.out.println("Available: " + room1Available);
+        System.out.println();
+
+        System.out.println("Room Number: " + room2Number);
+        System.out.println("Type: " + room2Type);
+        System.out.println("Price: " + room2Price);
+        System.out.println("Available: " + room2Available);
+        System.out.println();
+
+        System.out.println("Room Number: " + room3Number);
+        System.out.println("Type: " + room3Type);
+        System.out.println("Price: " + room3Price);
+        System.out.println("Available: " + room3Available);
+
+        // End message
+        System.out.println("\nRoom initialization completed successfully.");
     }
 }
