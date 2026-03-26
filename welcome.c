@@ -1,43 +1,77 @@
-import java.util.*;
+public class Main {import java.util.HashMap;
+import java.util.Map;
 
-class HotelSystem {
-    // HashSet ensures uniqueness (No double-booking a room ID)
-    private Set<Integer> bookedRooms = new HashSet<>();
-    // Queue ensures fair request handling (FIFO)
-    private Queue<String> bookingRequests = new LinkedList<>();
+    /**
+     * RoomInventory class encapsulates all inventory-related logic.
+     */
+    class RoomInventory {
 
-    public void addRequest(String guestName) {
-        bookingRequests.add(guestName);
-        System.out.println("Request added for: " + guestName);
-    }
+        // HashMap to store room type and available count
+        private Map<String, Integer> inventory;
 
-    public void processBooking(int roomId) {
-        if (bookingRequests.isEmpty()) {
-            System.out.println("No pending requests.");
-            return;
+        /**
+         * Constructor - initializes the inventory
+         */
+        public RoomInventory() {
+            inventory = new HashMap<>();
+
+            // Initialize room types with counts
+            inventory.put("Single", 5);
+            inventory.put("Double", 3);
+            inventory.put("Suite", 2);
         }
 
-        if (bookedRooms.contains(roomId)) {
-            System.out.println("Error: Room " + roomId + " is already booked!");
-        } else {
-            String guest = bookingRequests.poll(); // FIFO: Get the first person in line
-            bookedRooms.add(roomId);
-            System.out.println("Success: Room " + roomId + " booked for " + guest);
+        /**
+         * Get availability of a specific room type
+         */
+        public int getAvailability(String roomType) {
+            return inventory.getOrDefault(roomType, 0);
+        }
+
+        /**
+         * Update availability (increase/decrease)
+         */
+        public void updateAvailability(String roomType, int countChange) {
+            int current = inventory.getOrDefault(roomType, 0);
+            inventory.put(roomType, current + countChange);
+        }
+
+        /**
+         * Display full inventory
+         */
+        public void displayInventory() {
+            System.out.println("Current Room Inventory:");
+            System.out.println("--------------------------");
+
+            for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
+                System.out.println(entry.getKey() + " Rooms: " + entry.getValue());
+            }
         }
     }
-}
 
-public class Main {
-    public static void main(String[] args) {
-        HotelSystem hotel = new HotelSystem();
+    /**
+     * Main class - entry point
+     */
+    public class UseCase3InventorySetup {
 
-        // 1. Fair Request Handling (FIFO)
-        hotel.addRequest("Alice");
-        hotel.addRequest("Bob");
+        public static void main(String[] args) {
 
-        // 2. Real-time Inventory & Uniqueness Enforcement
-        hotel.processBooking(101); // Alice gets 101
-        hotel.processBooking(101); // Bob tries 101 -> Fails (Double-booking prevention)
-        hotel.processBooking(102); // Bob gets 102
+            // Initialize inventory
+            RoomInventory inventory = new RoomInventory();
+
+            // Display initial inventory
+            inventory.displayInventory();
+
+            // Simulate booking (reduce availability)
+            System.out.println("\nBooking 1 Single Room...");
+            inventory.updateAvailability("Single", -1);
+
+            // Simulate cancellation (increase availability)
+            System.out.println("Cancelling 1 Suite Room...");
+            inventory.updateAvailability("Suite", 1);
+
+            // Display updated inventory
+            System.out.println("\nUpdated Inventory:");
+            inventory.displayInventory();
+        }
     }
-}
